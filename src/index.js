@@ -15,7 +15,8 @@ app.use(express.json());
 app.use('/workers', require('./Routes/Worker'));
 app.use('/salaryChanges', require('./Routes/SalaryChange'));
 app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
-app.use('/relative', require('./Routes/Relative'));
+app.use('/workerRelative', require('./Routes/WorkerRelative'));
+app.use('/retiredWorker', require('./Routes/RetiredWorkers'));
 
 // starting the server
 app.listen(app.get('port'), () => {
