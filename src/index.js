@@ -14,7 +14,8 @@ app.use(express.json());
 // routes
 app.use('/workers', require('./Routes/Worker'));
 app.use('/salaryChanges', require('./Routes/SalaryChange'));
-app.use('/restLeave', require('./Routes/RestLeave'));
+app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
+
 // starting the server
 app.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);

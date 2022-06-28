@@ -30,5 +30,34 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.post('/add', (req, res) => {
+  const sql = 'INSERT INTO Permisos SET ?';
+
+  const workRestLeaveObj = {
+    Cedula: req.body.Cedula,
+    FechaReposo: req.body.FechaReposo,
+    Motivo: req.body.Motivo,
+    Tipo: req.body.Tipo,
+  };
+  
+  // Aqui poner las verificaciones
+  
+  conn.query(sql, workRestLeaveObj, error => {
+    if (error) throw error;
+    res.send('WorkRestLeave created!');
+  });
+});
+
+router.delete('/delete/:id/:date', (req, res) => {
+  const { id, date } = req.params;
+  const sql = `DELETE FROM Permisos WHERE Cedula = '${id}' AND FechaReposo = '${date}'`;
+
+  conn.query(sql, error => {
+    if (error) throw error;
+    res.send('WorkRestLeave deleted');
+  });
+});
+
+
 
 module.exports = router;
