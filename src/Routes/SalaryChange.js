@@ -30,4 +30,32 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.post('/add', (req, res) => {
+    const sql = 'INSERT INTO CambiosSalarios SET ?';
+  
+    const salaryChangeObj = {
+      cedula: req.body.Cedula,
+      fechaCambio: req.body.FechaCambio,
+      motivo: req.body.Motivo,
+      salarioSemanalNuevo: req.body.SalarioSemanalNuevo,
+    };
+    
+    // Aqui poner las verificaciones
+    
+    conn.query(sql, salaryChangeObj, error => {
+      if (error) throw error;
+      res.send('Salary Change created!');
+    });
+});
+
+router.delete('/delete/:id/:date', (req, res) => {
+    const { id, date } = req.params;
+    const sql = `DELETE FROM CambiosSalarios WHERE Cedula = '${id}' AND FechaCambio = '${date}'`;
+  
+    conn.query(sql, error => {
+      if (error) throw error;
+      res.send('Worker deleted');
+    });
+  });
+  
 module.exports = router;
