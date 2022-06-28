@@ -56,18 +56,32 @@ router.post('/add', (req, res) => {
     res.send('Worker created!');
   });
 });
-/*
+
 router.put('/update/:id', (req, res) => {
   const { id } = req.params;
-  const { name, city } = req.body;
-  const sql = `UPDATE customers SET name = '${name}', city='${city}' WHERE id =${id}`;
+  const { Cedula, COD, PrimerNombre, SegundoNombre, PrimerApellido, SegundoApellido,Genero,Direccion,FechaNacimiento,
+    Ocupacion, SalarioSemanal, FechaIngreso, esZurdo} = req.body;
+    const sql = 'UPDATE Trabajadores SET '  +
+    `COD='${COD}',` + 
+    `PrimerNombre='${PrimerNombre}',`+
+    `SegundoNombre='${SegundoNombre}',`+
+    `PrimerApellido='${PrimerApellido}',`+
+    `SegundoApellido='${SegundoApellido}',`+
+    `Genero='${Genero}',`+
+    `Direccion='${Direccion}',`+
+    `FechaNacimiento='${FechaNacimiento}',`+
+    `Ocupacion='${Ocupacion}',`+
+    `SalarioSemanal='${SalarioSemanal}',`+
+    `FechaIngreso='${FechaIngreso}',`+
+    `esZurdo='${esZurdo}' `+
+    `WHERE Cedula='${id}'`;
 
   conn.query(sql, error => {
     if (error) throw error;
-    res.send('Customer updated!');
+    res.send('Worker updated!');
   });
 });
-*/
+
 
 
 router.delete('/delete/:id', (req, res) => {
