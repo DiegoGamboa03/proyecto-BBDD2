@@ -30,4 +30,55 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.post('/add', (req, res) => {
+  const sql = 'INSERT INTO Trabajadores SET ?';
+
+  const workerObj = {
+    cedula: req.body.Cedula,
+    COD: req.body.COD,
+    PrimerNombre: req.body.PrimerNombre,
+    SegundoNombre: req.body.SegundoNombre,
+    PrimerApellido: req.body.PrimerApellido,
+    SegundoApellido: req.body.SegundoApellido,
+    Genero: req.body.Genero,
+    Direccion: req.body.Direccion,
+    FechaNacimiento: req.body.FechaNacimiento,
+    Ocupacion: req.body.Ocupacion,
+    SalarioSemanal: req.body.SalarioSemanal,
+    FechaIngreso: req.body.FechaIngreso,
+    esZurdo: req.body.esZurdo,
+  };
+  
+  // Aqui poner las verificaciones
+  
+  conn.query(sql, workerObj, error => {
+    if (error) throw error;
+    res.send('Worker created!');
+  });
+});
+/*
+router.put('/update/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, city } = req.body;
+  const sql = `UPDATE customers SET name = '${name}', city='${city}' WHERE id =${id}`;
+
+  conn.query(sql, error => {
+    if (error) throw error;
+    res.send('Customer updated!');
+  });
+});
+*/
+
+
+router.delete('/delete/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `DELETE FROM Trabajadores WHERE Cedula = ${id}`;
+
+  conn.query(sql, error => {
+    if (error) throw error;
+    res.send('Delete worker');
+  });
+});
+
+
 module.exports = router;
