@@ -15,4 +15,19 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const sql = `SELECT * FROM Trabajadores WHERE Cedula = ${id}`;
+  conn.query(sql, (error, result) => {
+    if (error) throw error;
+
+    if (result.length > 0) {
+      res.json(result);
+    } else {
+      res.send('Not result');
+    }
+  });
+});
+
 module.exports = router;
