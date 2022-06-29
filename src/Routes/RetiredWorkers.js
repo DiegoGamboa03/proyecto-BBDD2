@@ -30,4 +30,32 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.post('/add', (req, res) => {
+  const sql = 'INSERT INTO Retirados SET ?';
+
+  const retiredWorkerObj = {
+    Cedula: req.body.Cedula,
+    FechaRetiro: req.body.FechaRetiro,
+    Motivo: req.body.Motivo
+  };
+  
+  // Aqui poner las verificaciones
+  
+  conn.query(sql, retiredWorkerObj, error => {
+    if (error) throw error;
+    res.send('Relative created!');
+  });
+});
+
+router.delete('/delete/:id', (req, res) => {
+  const { id, date } = req.params;
+  const sql = `DELETE FROM Retirados WHERE Cedula = '${id}'`;
+
+  conn.query(sql, error => {
+    if (error) throw error;
+    res.send('Relative deleted');
+  });
+});
+
+
 module.exports = router;

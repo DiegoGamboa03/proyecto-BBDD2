@@ -30,22 +30,7 @@ router.get('/:id', (req, res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
-    const { id } = req.params;
-    console.log(id);
-    const sql = `SELECT * FROM Permisos WHERE Cedula = ${id}`;
-    conn.query(sql, (error, result) => {
-      if (error) throw error;
-  
-      if (result.length > 0) {
-        res.json(result);
-      } else {
-        res.send('Not result');
-      }
-    });
-  });
-  
-  router.post('/add', (req, res) => {
+router.post('/add', (req, res) => {
     const sql = 'INSERT INTO Familiares SET ?';
   
     const workRestLeaveObj = {
@@ -66,9 +51,9 @@ router.get('/:id', (req, res) => {
       if (error) throw error;
       res.send('Relative created!');
     });
-  });
+});
 
-  router.delete('/delete/:id', (req, res) => {
+router.delete('/delete/:id', (req, res) => {
     const { id, date } = req.params;
     const sql = `DELETE FROM Familiares WHERE Cedula = '${id}'`;
   
@@ -76,6 +61,6 @@ router.get('/:id', (req, res) => {
       if (error) throw error;
       res.send('Relative deleted');
     });
-  });
+});
 
 module.exports = router;
