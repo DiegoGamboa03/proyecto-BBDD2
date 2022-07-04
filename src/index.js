@@ -6,6 +6,18 @@ const app = express();
 // settings
 app.set('port', process.env.PORT || 3000);
 
+//GoogleApis Auth
+
+const KEYFILEPATH = 'D:\Proyecto BBDD2\proyecto-BBDD2\proyectobbdd-1bc9bffb64c5.json';
+const SCOPES = ['https://www.googleapis.com/auth/drive',
+                "https://www.googleapis.com/auth/spreadsheets"];
+
+
+const auth = new google.auth.GoogleAuth({
+    keyFile: KEYFILEPATH,
+    scopes: SCOPES,
+});
+
 // middlewares
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
