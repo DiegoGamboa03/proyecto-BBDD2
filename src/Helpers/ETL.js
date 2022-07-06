@@ -29,7 +29,7 @@ function extractDataFromSpreedSheet(spreadsheetID,auth) {
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetID,
-    range: 'Sheet1',
+    range: "Hoja 1!A4:Z",
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
