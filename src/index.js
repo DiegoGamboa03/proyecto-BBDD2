@@ -1,6 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
+const fs = require('fs');
+const readline = require('readline');
+const {google} = require('googleapis');
+
 const db = require('./Config/DatabaseConfig');
+const etl = require('./Helpers/ETL');
 const app = express();
 
 // settings
@@ -8,14 +13,13 @@ app.set('port', process.env.PORT || 3000);
 
 //GoogleApis Auth
 
-const KEYFILEPATH = 'D:\Proyecto BBDD2\proyecto-BBDD2\proyectobbdd-1bc9bffb64c5.json';
+const KEYFILEPATH = 'credentials.json';
 const SCOPES = ['https://www.googleapis.com/auth/drive',
-                "https://www.googleapis.com/auth/spreadsheets"];
-
+                'https://www.googleapis.com/auth/spreadsheets'];
 
 const auth = new google.auth.GoogleAuth({
     keyFile: KEYFILEPATH,
-    scopes: SCOPES,
+    scopes: SCOPES
 });
 
 // middlewares
@@ -29,6 +33,9 @@ app.use('/salaryChanges', require('./Routes/SalaryChange'));
 app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
 app.use('/workerRelative', require('./Routes/WorkerRelative'));
 app.use('/retiredWorker', require('./Routes/RetiredWorkers'));
+
+//ETL 
+etl.listFiles(auth);
 
 // starting the server
 app.listen(app.get('port'), () => {
