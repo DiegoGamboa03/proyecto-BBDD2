@@ -16,6 +16,8 @@ function listFiles(auth) {
           console.log(`${file.name} (${file.id})`);
           if(file.name == 'Prueba 1'){
             extractDataFromSpreedSheetFormat1(file.id, auth);
+          }else if(file.name == 'Prueba 2'){
+            extractDataFromSpreedSheetFormat2(file.id, auth);
           }
         });
       } else {
@@ -24,6 +26,7 @@ function listFiles(auth) {
     });
 }
 
+/*Extraccion de los datos de cada uno de los formatos*/
 function extractDataFromSpreedSheetFormat1(spreadsheetID,auth) {
   console.log(spreadsheetID);
   const sheets = google.sheets({version: 'v4', auth});
@@ -36,6 +39,28 @@ function extractDataFromSpreedSheetFormat1(spreadsheetID,auth) {
     if (rows.length) {
       rows.map((row) => {
         //console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]},${row[12]}, ${row[13]}, ${row[14]}`);
+        if(!(row[0] || row[1]) == ""){
+          uploadFormat1(row)
+        }
+      });
+    } else {
+      console.log('No data found.');
+    }
+  });
+}
+
+function extractDataFromSpreedSheetFormat2(spreadsheetID,auth) {
+  console.log(spreadsheetID);
+  const sheets = google.sheets({version: 'v4', auth});
+  sheets.spreadsheets.values.get({
+    spreadsheetId: spreadsheetID,
+    range: "ACTUALIZACIÓN DE SALARIOS!A13:L",
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values
+    if (rows.length) {
+      rows.map((row) => {
+        console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]},${row[12]}, ${row[13]}, ${row[14]}`);
         if(!(row[0] || row[1]) == ""){
           uploadFormat1(row)
         }
