@@ -18,6 +18,8 @@ function listFiles(auth) {
             extractDataFromSpreedSheetFormat1(file.id, auth);
           }else if(file.name == 'Prueba 2'){
             extractDataFromSpreedSheetFormat2(file.id, auth);
+          }else if(file.name == 'Prueba 3'){
+            extractDataFromSpreedSheetFormat3(file.id,auth);
           }
         });
       } else {
@@ -60,9 +62,31 @@ function extractDataFromSpreedSheetFormat2(spreadsheetID,auth) {
     const rows = res.data.values
     if (rows.length) {
       rows.map((row) => {
-        console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]},${row[12]}, ${row[13]}, ${row[14]}`);
+        console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]}`);
         if(!(row[0] || row[1]) == ""){
-          uploadFormat1(row)
+          uploadFormat2(row)
+        }
+      });
+    } else {
+      console.log('No data found.');
+    }
+  });
+}
+
+function extractDataFromSpreedSheetFormat3(spreadsheetID,auth) {
+  console.log(spreadsheetID);
+  const sheets = google.sheets({version: 'v4', auth});
+  sheets.spreadsheets.values.get({
+    spreadsheetId: spreadsheetID,
+    range: "ACTUALIZACIÓN DE SALARIOS!A13:L",
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values
+    if (rows.length) {
+      rows.map((row) => {
+        console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]}`);
+        if(!(row[0] || row[1]) == ""){
+          uploadFormat2(row)
         }
       });
     } else {
@@ -106,6 +130,17 @@ function uploadFormat1(row){
   const sql = 'INSERT INTO Trabajadores SET ?';
 
 
+}
+
+function uploadFormat2(row){
+//No recojo nombre ya que no lo necesito para la bbdd
+  var salaryChange = {
+    Cedula: row[0],
+    SalarioSemanal: Number(row[7])/4,
+    FechaCambioSalario: row[8],
+    Motivo:row[10]
+  }
+  let json = JSON.stringify(salaryChange);
 }
 
 exports.listFiles = listFiles;
