@@ -173,9 +173,9 @@ function uploadFormat2(row){
   let json = JSON.stringify(salaryChangeObj);
   const sql = 'INSERT INTO CambiosSalarios SET ?';
 
-  conn.query(sql, salaryChangeObj, error => {
+  /*conn.query(sql, salaryChangeObj, error => {
     if (error) throw error;
-  });
+  });*/
 }
 /**
  * Con una fila de informacion, la interpreta segun el formato "4 FORMATO CARGA DE FAMILIARES- MASIVAMENTE" y la sube a la base de datos
@@ -185,7 +185,7 @@ function uploadFormat3(row){
   const workerRelativeCompleteName = String(row[14]).split(" ");
 
   let genre;
-  console.log('Row 12 ' + row[12] + ' Row 13 ' + row[13])
+
   if(String(row[12]).length && row[13].length == 0 ){
     genre = 'M';
   }else if(String(row[13]).length && row[12].length == 0){
@@ -193,8 +193,10 @@ function uploadFormat3(row){
   }else if(row[12].length && row[13].length){
     console.log('Las dos casillas de genero estan marcadas, por favor, solo marque una');
   }
-  const birthdate = String(row[18]) +"-"+ String(row[19]) +"-"+ String(row[20]);
-    var workerRelative = {
+
+  const birthdate = String(row[20]) +"-"+ String(row[19]) +"-"+ String(row[18]);
+
+    var workerRelativeObj = {
       CedulaTrabajador: row[0],
       Cedula: row[9],
       PrimerNombre: workerRelativeCompleteName[0],
@@ -203,11 +205,15 @@ function uploadFormat3(row){
       SegundoApellido: workerRelativeCompleteName[3],
       FechaNacimiento: birthdate,
       Genero: genre,
-      Parentesco: row[7],
+      Parentesco: row[7], 
     }
-    let json = JSON.stringify(workerRelative);
+    let json = JSON.stringify(workerRelativeObj);
 
-    console.log(json);
+    const sql = 'INSERT INTO Familiares SET ?';
+
+    conn.query(sql, workerRelativeObj, error => {
+      if (error) throw error;
+    });
   }
 
 exports.insertDataInDatabaseFromSpreedsheets = insertDataInDatabaseFromSpreedsheets;
