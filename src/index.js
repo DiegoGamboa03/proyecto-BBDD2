@@ -34,10 +34,8 @@ app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
 app.use('/workerRelative', require('./Routes/WorkerRelative'));
 app.use('/retiredWorker', require('./Routes/RetiredWorkers'));
 
-//ETL 
-etl.listFiles(auth);
-
 // starting the server
 app.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
+    etl.insertDataInDatabaseFromSpreedsheets(auth);
 });

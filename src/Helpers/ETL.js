@@ -1,16 +1,22 @@
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
-
-function listFiles(auth) {
+const { GoogleAuth } = require('google-auth-library');
+const conn = require('D:/Proyecto BBDD2/proyecto-BBDD2/src/Config/DatabaseConfig');
+/**
+ * Esta funcion insertara en la base de datos toda la informacion que se encuentre en los googlesheets dentro del drive
+ * @param {GoogleAuth} auth 
+ * 
+ */
+function insertDataInDatabaseFromSpreedsheets(auth) {
     const drive = google.drive({version: 'v3', auth});
-    drive.files.list({
+    drive.files.list({  //Se listan todos los archivos dentro del drive
       pageSize: 10,
-      fields: 'nextPageToken, files(id, name)',
+      fields: 'nextPageToken, files(id, name)', //Te devolvera todos los nombres y IDs de los archivos
     }, (err, res) => {
       if (err) return console.log('The API returned an error: ' + err);
       const files = res.data.files;
-      if (files.length) {
+      if (files.length) { //Si recibio archvios, entonces los listara
         console.log('Files:');
         files.map((file) => {
           console.log(`${file.name} (${file.id})`);
@@ -27,22 +33,26 @@ function listFiles(auth) {
       }
     });
 }
-
-/*Extraccion de los datos de cada uno de los formatos*/
+/**
+ * Extraera toda la informacion del google sheet con el formato "1 FORMATO INCLUSIÓN SEGURO SOCIAL"
+ * @param {String} spreadsheetID 
+ * @param {GoogleAuth} auth 
+ */
 function extractDataFromSpreedSheetFormat1(spreadsheetID,auth) {
-  console.log(spreadsheetID);
+  //console.log(spreadsheetID);
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetID,
-    range: "FORMATO INGRESO AL IVSS!A11:U",
+    range: "FORMATO INGRESO AL IVSS!A11:U", //El rango especifico para este formato
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
+    if(typeof rows === 'undefined') return console.log('No hay informacion en el spreedsheet '+ spreadsheetID); //En caso de que el spreedsheet este vacio
     if (rows.length) {
       rows.map((row) => {
         //console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]},${row[12]}, ${row[13]}, ${row[14]}`);
         if(!(row[0] || row[1]) == ""){
-          uploadFormat1(row)
+          uploadFormat1(row) //Envia cada fila a que se suba a la base de datos
         }
       });
     } else {
@@ -50,19 +60,24 @@ function extractDataFromSpreedSheetFormat1(spreadsheetID,auth) {
     }
   });
 }
-
+/**
+ * Extraera toda la informacion del google sheet con el formato "3 FORMATO ACTUALIZACIÓN DE SALARIOS"
+ * @param {String} spreadsheetID 
+ * @param {GoogleAuth} auth 
+ */
 function extractDataFromSpreedSheetFormat2(spreadsheetID,auth) {
-  console.log(spreadsheetID);
+  //console.log(spreadsheetID);
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetID,
-    range: "ACTUALIZACIÓN DE SALARIOS!A13:L",
+    range: "ACTUALIZACIÓN DE SALARIOS!A13:L", //El rango especifico para este formato
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
-    const rows = res.data.values
+    const rows = res.data.values;
+    if(typeof rows === 'undefined') return console.log('No hay informacion en el spreedsheet '+ spreadsheetID);
     if (rows.length) {
       rows.map((row) => {
-        console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]}`);
+        //console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]}`);
         if(!(row[0] || row[1]) == ""){
           uploadFormat2(row)
         }
@@ -72,21 +87,26 @@ function extractDataFromSpreedSheetFormat2(spreadsheetID,auth) {
     }
   });
 }
-
+/**
+ * Extraera toda la informacion del google sheet con el formato "4 FORMATO CARGA DE FAMILIARES- MASIVAMENTE"
+ * @param {String} spreadsheetID 
+ * @param {GoogleAuth} auth 
+ */
 function extractDataFromSpreedSheetFormat3(spreadsheetID,auth) {
   console.log(spreadsheetID);
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetID,
-    range: "ACTUALIZACIÓN DE SALARIOS!A13:L",
-  }, (err, res) => {
+    range: "Hoja1!A12:U",
+  },  (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
-    const rows = res.data.values
+    const rows = res.data.values;
+    if(typeof rows === 'undefined') return console.log('No hay informacion en el spreedsheet '+ spreadsheetID); //El rango especifico para este formato
     if (rows.length) {
       rows.map((row) => {
-        console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]}`);
+        //console.log(`${row[0]}, ${row[1]}, ${row[2]},${row[3]}, ${row[4]}, ${row[5]},${row[6]}, ${row[7]}, ${row[8]},${row[9]}, ${row[10]}, ${row[11]}`);
         if(!(row[0] || row[1]) == ""){
-          uploadFormat2(row)
+          uploadFormat3(row)
         }
       });
     } else {
@@ -95,6 +115,10 @@ function extractDataFromSpreedSheetFormat3(spreadsheetID,auth) {
   });
 }
 
+/**
+ * Con una fila de informacion, la interpreta segun el formato "1 FORMATO INCLUSIÓN SEGURO SOCIAL" y la sube a la base de datos
+ * @param {Array[]} row 
+ */
 function uploadFormat1(row){
   //Separamos el nombre completo del trabajador en partes
   const workerCompleteName = String(row[3]).split(" ");
@@ -131,16 +155,59 @@ function uploadFormat1(row){
 
 
 }
-
+/**
+ * Con una fila de informacion, la interpreta segun el formato "3 FORMATO ACTUALIZACIÓN DE SALARIOS" y la sube a la base de datos
+ * @param {Array[]} row 
+ */
 function uploadFormat2(row){
 //No recojo nombre ya que no lo necesito para la bbdd
-  var salaryChange = {
+  let date = new Date(row[8]);
+  dateInFormat = `${date.getFullYear}-${date.getDay}-${date.getMonth}`
+  console.log(Number(row[6].replace(',','.'))); 
+  var salaryChangeObj = {
     Cedula: row[0],
-    SalarioSemanal: Number(row[7])/4,
-    FechaCambioSalario: row[8],
+    salarioSemanalNuevo: Number(row[6].replace(',','.')),
+    fechaCambio: date,
     Motivo:row[10]
   }
-  let json = JSON.stringify(salaryChange);
-}
+  let json = JSON.stringify(salaryChangeObj);
+  const sql = 'INSERT INTO CambiosSalarios SET ?';
 
-exports.listFiles = listFiles;
+  conn.query(sql, salaryChangeObj, error => {
+    if (error) throw error;
+  });
+}
+/**
+ * Con una fila de informacion, la interpreta segun el formato "4 FORMATO CARGA DE FAMILIARES- MASIVAMENTE" y la sube a la base de datos
+ * @param {Array[]} row 
+ */
+function uploadFormat3(row){
+  const workerRelativeCompleteName = String(row[14]).split(" ");
+
+  let genre;
+  console.log('Row 12 ' + row[12] + ' Row 13 ' + row[13])
+  if(String(row[12]).length && row[13].length == 0 ){
+    genre = 'M';
+  }else if(String(row[13]).length && row[12].length == 0){
+    genre = 'F';
+  }else if(row[12].length && row[13].length){
+    console.log('Las dos casillas de genero estan marcadas, por favor, solo marque una');
+  }
+  const birthdate = String(row[18]) +"-"+ String(row[19]) +"-"+ String(row[20]);
+    var workerRelative = {
+      CedulaTrabajador: row[0],
+      Cedula: row[9],
+      PrimerNombre: workerRelativeCompleteName[0],
+      SegundoNombre:workerRelativeCompleteName[1],
+      PrimerApellido: workerRelativeCompleteName[2],
+      SegundoApellido: workerRelativeCompleteName[3],
+      FechaNacimiento: birthdate,
+      Genero: genre,
+      Parentesco: row[7],
+    }
+    let json = JSON.stringify(workerRelative);
+
+    console.log(json);
+  }
+
+exports.insertDataInDatabaseFromSpreedsheets = insertDataInDatabaseFromSpreedsheets;
