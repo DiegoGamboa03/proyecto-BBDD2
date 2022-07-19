@@ -40,7 +40,21 @@ router.post('/add', (req, res) => {
       salarioSemanalNuevo: req.body.SalarioSemanalNuevo,
     };
     
-    // Aqui poner las verificaciones
+    //Validaciones
+
+    if(salaryChangeObj.Cedula.matched()){ //Que cedula no contenga letras
+      res.send('La cedula no puede contener letras');
+    }else if(salaryChangeObj.motivo.toLowerCase() == 'm' || salaryChangeObj.motivo.toLowerCase() == 'o'){ //Motivo solo puede ser M (Medico) o O (Otros)
+      res.send('Motivo solo puede ser: medico (M) o otro (O)');
+    }else if(typeof salaryChangeObj.cedula != 'string'){
+      res.send('cedula debe ser un string');
+    }else if(typeof salaryChangeObj.fechaCambio != 'string'){
+      res.send('fechaCambio debe ser un string');
+    }else if(typeof salaryChangeObj.motivo != 'string'){
+      res.send('Motivo debe ser un string');
+    }else if(typeof salaryChangeObj.salarioSemanalNuevo != 'float' || typeof salaryChangeObj.salarioSemanalNuevo != 'number'){
+      res.send('Salario semanal nuevo debe ser un float');
+    }
     
     conn.query(sql, salaryChangeObj, error => {
       if (error) throw error;

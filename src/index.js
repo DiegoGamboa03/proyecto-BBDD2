@@ -33,6 +33,7 @@ app.use('/salaryChanges', require('./Routes/SalaryChange'));
 app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
 app.use('/workerRelative', require('./Routes/WorkerRelative'));
 app.use('/retiredWorker', require('./Routes/RetiredWorkers'));
+app.use('/newWorker', require('./Routes/NewWorker'));
 
 // starting the server
 app.listen(app.get('port'), () => {
