@@ -34,6 +34,8 @@ app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
 app.use('/workerRelative', require('./Routes/WorkerRelative'));
 app.use('/retiredWorker', require('./Routes/RetiredWorkers'));
 app.use('/newWorker', require('./Routes/NewWorker'));
+app.use('/stadistics', require('./Routes/Statistics'));
+
 
 // starting the server
 app.listen(app.get('port'), () => {

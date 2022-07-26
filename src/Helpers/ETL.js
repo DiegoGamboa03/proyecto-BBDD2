@@ -3,6 +3,7 @@ const readline = require('readline');
 const {google} = require('googleapis');
 const { GoogleAuth } = require('google-auth-library');
 const conn = require('D:/Proyecto BBDD2/proyecto-BBDD2/src/Config/DatabaseConfig');
+
 /**
  * Esta funcion insertara en la base de datos toda la informacion que se encuentre en los googlesheets dentro del drive
  * @param {GoogleAuth} auth 
@@ -211,9 +212,9 @@ function uploadFormat3(row){
 
     const sql = 'INSERT INTO Familiares SET ?';
 
-    conn.query(sql, workerRelativeObj, error => {
+   /* conn.query(sql, workerRelativeObj, error => {
       if (error) throw error;
-    });
+    });*/
   }
 
 exports.insertDataInDatabaseFromSpreedsheets = insertDataInDatabaseFromSpreedsheets;
