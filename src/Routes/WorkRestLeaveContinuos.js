@@ -71,4 +71,28 @@ router.get('/:id/:date', (req, res) => {
     });
 });
 
+router.get('/workReastLeave/:id/:date', (req, res) => {
+  const { id,date } = req.params;
+  console.log(id);
+  const sql = `CALL PermisosDentroDePermisoContinuo('${date}','${id}');`;
+  
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
+    } else {
+      conn.query(sql, (error, result) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }else if (result.length > 0) {
+          res.json(result);
+        } else {
+          res.send(`No hay permisos continuos asociados a este trabajador '${id}', en esta fecha '${date}'`);
+        }
+      });
+    }
+  });
+});
+
+
 module.exports = router;

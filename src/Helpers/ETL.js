@@ -94,7 +94,6 @@ function extractDataFromSpreedSheetFormat2(spreadsheetID,auth) {
  * @param {GoogleAuth} auth 
  */
 function extractDataFromSpreedSheetFormat3(spreadsheetID,auth) {
-  console.log(spreadsheetID);
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetID,

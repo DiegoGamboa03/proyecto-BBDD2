@@ -62,10 +62,10 @@ router.delete('/delete/:id/:password',(req, res) => {
 
 router.put('/update/:id/:password', (req, res) => {
     const { id, password } = req.params;
-    const {email,contraseña} = req.body;
+    const {email,password_user} = req.body;
       const sql = 'UPDATE Usuarios SET '  +
       `email='${email}',` + 
-      `password_user='${contraseña}'` +
+      `password_user='${password_user}'` +
       ` WHERE id_user = '${id}' AND password_user = '${password}'`;
 
     jwt.verify(req.body.token, 'secretkey', (err, authData) => {

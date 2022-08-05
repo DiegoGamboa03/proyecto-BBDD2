@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const router = new Router();
 const conn = require('../Config/DatabaseConfig');
+const age = require('../Helpers/ageCalculator');
 const jwt = require('jsonwebtoken');
 
 router.get('/', (req, res) => {
@@ -55,6 +56,7 @@ router.post('/add', (req, res) => {
     const workerRelativeObj = {
       CedulaTrabajador: req.body.CedulaTrabajador,
       Cedula: req.body.Cedula,
+      COD: req.body.COD,
       PrimerNombre: req.body.PrimerNombre,
       SegundoNombre: req.body.SegundoNombre,
       PrimerApellido: req.body.PrimerApellido,
@@ -68,6 +70,7 @@ router.post('/add', (req, res) => {
 
     let arrayGenre = ['M', 'F'];
     let arrayRelationship = ['Hijo', 'Conyuge'];
+    let arrayCOD = ['V', 'E'];
   
     let regexpID = new RegExp(/^\d{1,3}\.\d{3,3}\.\d{3,3}$/,"gm");
     let regexpName = RegExp(/^[A-Za-z]*$/,"gm");    
@@ -98,6 +101,9 @@ router.post('/add', (req, res) => {
       return;
     }else if(!(arrayGenre.indexOf(workerRelativeObj.Genero) > -1)){
       res.send('El genero debe ser "M", "F"');
+      return;
+    }else if(!(arrayCOD.indexOf(COD) > -1)){
+      res.send('El COD, tiene que ser "V","E"');
       return;
     }
     
@@ -133,6 +139,65 @@ router.delete('/delete/:id', (req, res) => {
             return;
           }
           res.send('Familiar eliminado');
+        });
+      }
+    });
+});
+
+router.put('/update/:id', (req, res) => {
+  const { id } = req.params;
+  const { CedulaTrabajador, Cedula, COD, PrimerNombre, SegundoNombre, PrimerApellido, SegundoApellido,Genero,FechaNacimiento, Parentesco} = req.body;
+    const sql = 'UPDATE Familiares SET '  +
+    `COD='${COD}',` + 
+    `PrimerNombre='${PrimerNombre}',`+
+    `SegundoNombre='${SegundoNombre}',`+
+    `PrimerApellido='${PrimerApellido}',`+
+    `SegundoApellido='${SegundoApellido}',`+
+    `Genero='${Genero}',`+
+    `FechaNacimiento='${FechaNacimiento}',`+
+    `Ocupacion='${Parentesco}',`+
+    `WHERE Cedula='${id}'`;
+
+    let arrayGenre = ['M', 'F'];
+    let arrayCOD = ['V', 'E'];
+
+    let regexpID = new RegExp(/^\d{1,3}\.\d{3,3}\.\d{3,3}$/,"gm");
+    let regexpName = RegExp(/^[A-Za-z]*$/,"gm");    
+
+    let birthdate = new Date(FechaNacimiento);
+    if(Date(FechaNacimiento) > Date.now()){
+      res.send('La fecha de nacimiento no puede ser mayor a la fecha de hoy');
+      return;
+    }else if(!(regexpName.test(PrimerNombre))){
+      res.send('El primer nombre solo puede incluir letras, sin espacios blancos, numeros o caracteres especiales');
+      return;
+    }else if(!(regexpName.test(SegundoNombre))){
+      res.send('El segundo nombre solo puede incluir letras, sin espacios blancos, numeros o caracteres especiales');
+      return;
+    }else if(!(regexpName.test(PrimerApellido))){
+      res.send('El primer apellido solo puede incluir letras, sin espacios blancos, numeros o caracteres especiales');
+      return;
+    }else if(!(regexpName.test(SegundoApellido))){
+      res.send('El segundo apellido solo puede incluir letras, sin espacios blancos, numeros o caracteres especiales');
+      return;
+    }else if(!(arrayCOD.indexOf(COD) > -1)){
+      res.send('El COD, tiene que ser "V","E"');
+      return;
+    }else if(!(arrayGenre.indexOf(Genero) > -1)){
+      res.send('El genero debe ser "M", "F"');
+      return;
+    }
+
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, error => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          res.send(`El trabajador con la cedula '${id}'`);
         });
       }
     });

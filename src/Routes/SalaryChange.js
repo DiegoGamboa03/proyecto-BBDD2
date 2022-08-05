@@ -91,7 +91,7 @@ router.post('/add', (req, res) => {
       }
     });
 });
-
+/*
 router.delete('/delete/:id/:date', (req, res) => {
     const { id, date } = req.params;
     const sql = `DELETE FROM CambiosSalarios WHERE Cedula = '${id}' AND FechaCambio = '${date}'`;
@@ -110,5 +110,5 @@ router.delete('/delete/:id/:date', (req, res) => {
       }
     });
   });
-  
+  */
 module.exports = router;

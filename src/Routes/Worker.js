@@ -51,6 +51,28 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.get('/Active', (req, res) => {
+  const sql = 'SELECT * FROM TrabajadoresActivos';
+
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
+    } else {
+      conn.query(sql, (error, results) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
+        if (results.length > 0) {
+          res.json(results);
+        } else {
+          res.send('No hay trabajadores');
+        }
+      });
+    }
+  });
+});
+
 router.post('/add', (req, res) => {
   const sql = 'INSERT INTO Trabajadores SET ?';
 
@@ -144,6 +166,14 @@ router.put('/update/:id', (req, res) => {
     `FechaIngreso='${FechaIngreso}',`+
     `esZurdo='${esZurdo}' `+
     `WHERE Cedula='${id}'`;
+
+    let arrayGenre = ['M', 'F'];
+    let arrayCOD = ['V', 'E'];
+
+    let regexpID = new RegExp(/^\d{1,3}\.\d{3,3}\.\d{3,3}$/,"gm");
+    let regexpName = RegExp(/^[A-Za-z]*$/,"gm");    
+
+    let birthdate = new Date(workerObj.FechaNacimiento);
 
     if(Date(workerObj.FechaIngreso) > Date.now()){
       res.send('La fecha de ingreso no puede ser mayor a la fecha de hoy');
