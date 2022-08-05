@@ -2,21 +2,28 @@ const { Router } = require('express');
 const router = new Router();
 const conn = require('../Config/DatabaseConfig');
 const age = require('../Helpers/ageCalculator');
+const jwt = require('jsonwebtoken');
 
 
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM Trabajadores';
 
-    conn.query(sql, (error, results) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    if (results.length > 0) {
-      res.json(results);
-    } else {
-      res.send('No hay trabajadores');
-    }
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, (error, results) => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          if (results.length > 0) {
+            res.json(results);
+          } else {
+            res.send('No hay trabajadores');
+          }
+        });
+      }
     });
 });
 
@@ -24,15 +31,22 @@ router.get('/:id', (req, res) => {
   const { id } = req.params;
   console.log(id);
   const sql = `SELECT * FROM Trabajadores WHERE Cedula = ${id}`;
-  conn.query(sql, (error, result) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    if (result.length > 0) {
-      res.json(result);
+  
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
     } else {
-      res.send(`No hay trabajadores con esta cedula '${id}'`);
+      conn.query(sql, (error, result) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
+        if (result.length > 0) {
+          res.json(result);
+        } else {
+          res.send(`No hay trabajadores con esta cedula '${id}'`);
+        }
+      });
     }
   });
 });
@@ -96,13 +110,19 @@ router.post('/add', (req, res) => {
     res.send('El genero debe ser "M", "F"');
     return;
   }
-  
-  conn.query(sql, workerObj, error => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
+
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
+    } else {
+      conn.query(sql, workerObj, error => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
+        res.send('Trabajador creado');
+      });
     }
-    res.send('Trabajador creado');
   });
 });
 
@@ -153,31 +173,42 @@ router.put('/update/:id', (req, res) => {
       res.send('El genero debe ser "M", "F"');
       return;
     }
-    
 
-  conn.query(sql, error => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    res.send(`El trabajador con la cedula '${id}'`);
-  });
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, error => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          res.send(`El trabajador con la cedula '${id}'`);
+        });
+      }
+    });
 });
 
 router.delete('/delete/:id', (req, res) => {
   const { id } = req.params;
   const sql = `DELETE FROM Trabajadores WHERE Cedula = ${id}`;
 
-  conn.query(sql, (error,result) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }else if(result.affectedRows <= 0){
-      res.send(`No existe un empleado con esta cedula '${id}'`);
-      return;
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
+    } else {
+      conn.query(sql, (error,result) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }else if(result.affectedRows <= 0){
+          res.send(`No existe un empleado con esta cedula '${id}'`);
+          return;
+        }
+        res.send('Trabajador ha sido eliminado');
+      }); 
     }
-    res.send('Trabajador ha sido eliminado');
-  }); 
+  });
 });
 
 

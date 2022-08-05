@@ -2,7 +2,6 @@ const { Router } = require('express');
 const router = new Router();
 const conn = require('../Config/DatabaseConfig');
 const jwt = require('jsonwebtoken');
-const verify = require('../Helpers/verifyToken');
 
 /*LogIn*/
 router.get('/login/:id/:password', (req, res) => {
@@ -17,6 +16,7 @@ router.get('/login/:id/:password', (req, res) => {
         jwt.sign({result}, 'secretkey', (err, token) => {
           console.log(token);
           res.json({
+            "acceso": true,
             token
           });
         });

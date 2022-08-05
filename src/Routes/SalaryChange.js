@@ -1,20 +1,27 @@
 const { Router } = require('express');
 const router = new Router();
 const conn = require('../Config/DatabaseConfig');
+const jwt = require('jsonwebtoken');
 
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM CambiosSalarios';
 
-    conn.query(sql, (error, results) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    else if (results.length > 0) {
-      res.json(results);
-    } else {
-      res.send('No hay cambios de salarios');
-    }
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, (error, results) => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          else if (results.length > 0) {
+            res.json(results);
+          } else {
+            res.send('No hay cambios de salarios');
+          }
+          });
+      }
     });
 });
 
@@ -22,14 +29,21 @@ router.get('/:id', (req, res) => {
   const { id } = req.params;
   console.log(id);
   const sql = `SELECT * FROM CambiosSalarios WHERE Cedula = ${id}`;
-  conn.query(sql, (error, result) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }else if (result.length > 0) {
-      res.json(result);
+  
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
     } else {
-      res.send('No hay cambios de salarios relacionados con esta cedula');
+      conn.query(sql, (error, result) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }else if (result.length > 0) {
+          res.json(result);
+        } else {
+          res.send('No hay cambios de salarios relacionados con esta cedula');
+        }
+      });
     }
   });
 });
@@ -63,25 +77,37 @@ router.post('/add', (req, res) => {
       return;
     }
     
-    conn.query(sql, salaryChangeObj, error => {
-      if (error){
-        res.send(error.sqlMessage);
-        return;
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, salaryChangeObj, error => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          res.send(`El salario actual de '${salaryChangeObj.cedula}'`);
+        });
       }
-      res.send(`El salario actual de '${salaryChangeObj.cedula}'`);
     });
 });
 
 router.delete('/delete/:id/:date', (req, res) => {
     const { id, date } = req.params;
     const sql = `DELETE FROM CambiosSalarios WHERE Cedula = '${id}' AND FechaCambio = '${date}'`;
-  
-    conn.query(sql, error => {
-      if (error){
-        res.send(error.sqlMessage);
-        return;
+
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, error => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          res.send('El salario ha sido eliminado');
+        });
       }
-      res.send('El salario ha sido eliminado');
     });
   });
   

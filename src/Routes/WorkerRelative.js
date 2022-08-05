@@ -5,33 +5,47 @@ const conn = require('../Config/DatabaseConfig');
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM Familiares';
 
-    conn.query(sql, (error, results) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    if (results.length > 0) {
-      res.json(results);
-    } else {
-      res.send('No se han encontrado familiares');
-    }
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, (error, results) => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          if (results.length > 0) {
+            res.json(results);
+          } else {
+            res.send('No se han encontrado familiares');
+          }
+        });
+      }
     });
 });
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   const sql = `SELECT * FROM Familiares WHERE Cedula = ${id}`;
-  conn.query(sql, (error, result) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    if (result.length > 0) {
-      res.json(result);
+  
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
     } else {
-      res.send('no se han encontrado familiares asociados a esta cedula');
+      conn.query(sql, (error, result) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
+        if (result.length > 0) {
+          res.json(result);
+        } else {
+          res.send('no se han encontrado familiares asociados a esta cedula');
+        }
+      });
     }
   });
+  
 });
 
 router.post('/add', (req, res) => {
@@ -86,28 +100,40 @@ router.post('/add', (req, res) => {
       return;
     }
     
-    conn.query(sql, workerRelativeObj, error => {
-      if (error){
-        res.send(error.sqlMessage);
-        return;
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, workerRelativeObj, error => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          res.send('El familiar ha sido  creado');
+        });
       }
-      res.send('El familiar ha sido  creado');
     });
 });
 
 router.delete('/delete/:id', (req, res) => {
     const { id, date } = req.params;
     const sql = `DELETE FROM Familiares WHERE Cedula = '${id}'`;
-  
-    conn.query(sql, error => {
-      if (error){
-        res.send(error.sqlMessage);
-        return;
-      }else if(result.affectedRows <= 0){
-        res.send(`No existe un familiar con esta cedula '${id}'`);
-        return;
+
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, error => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }else if(result.affectedRows <= 0){
+            res.send(`No existe un familiar con esta cedula '${id}'`);
+            return;
+          }
+          res.send('Familiar eliminado');
+        });
       }
-      res.send('Familiar eliminado');
     });
 });
 

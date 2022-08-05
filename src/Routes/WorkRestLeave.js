@@ -5,16 +5,22 @@ const conn = require('../Config/DatabaseConfig');
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM Permisos';
 
-    conn.query(sql, (error, results) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }
-    if (results.length > 0) {
-      res.json(results);
-    } else {
-      res.send('No hay permisos');
-    }
+    jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+      if(err) {
+        res.sendStatus(403);
+      } else {
+        conn.query(sql, (error, results) => {
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
+          if (results.length > 0) {
+            res.json(results);
+          } else {
+            res.send('No hay permisos');
+          }
+        });
+      }
     });
 });
 
@@ -22,14 +28,21 @@ router.get('/:id', (req, res) => {
   const { id } = req.params;
   console.log(id);
   const sql = `SELECT * FROM Permisos WHERE Cedula = ${id}`;
-  conn.query(sql, (error, result) => {
-    if (error){
-      res.send(error.sqlMessage);
-      return;
-    }else if (result.length > 0) {
-      res.json(result);
+  
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
     } else {
-      res.send(`No hay permisos asociados a este trabajador '${id}'`);
+      conn.query(sql, (error, result) => {
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }else if (result.length > 0) {
+          res.json(result);
+        } else {
+          res.send(`No hay permisos asociados a este trabajador '${id}'`);
+        }
+      });
     }
   });
 });
@@ -62,9 +75,17 @@ router.post('/add', (req, res) => {
     res.send('Ingrese un motivo valido: Enfermedad,Accidente,Reposo,Maternidad');
     return;
   }
-  conn.query(sql, workRestLeaveObj, error => {
-    if (error) throw error;
-    res.send('El permiso ha sido creado');
+
+
+  jwt.verify(req.body.token, 'secretkey', (err, authData) => {
+    if(err) {
+      res.sendStatus(403);
+    } else {
+      conn.query(sql, workRestLeaveObj, error => {
+        if (error) throw error;
+        res.send('El permiso ha sido creado');
+      });
+    }
   });
 });
 
