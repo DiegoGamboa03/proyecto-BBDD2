@@ -31,6 +31,7 @@ app.use(express.json());
 app.use('/workers', require('./Routes/Worker'));
 app.use('/salaryChanges', require('./Routes/SalaryChange'));
 app.use('/workRestLeave', require('./Routes/WorkRestLeave'));
+app.use('/workRestLeaveContinuos', require('./Routes/WorkRestLeaveContinuos'));
 app.use('/workerRelative', require('./Routes/WorkerRelative'));
 app.use('/retiredWorker', require('./Routes/RetiredWorkers'));
 app.use('/newWorker', require('./Routes/NewWorker'));
