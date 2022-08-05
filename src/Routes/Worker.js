@@ -51,7 +51,7 @@ router.get('/:id', (req, res) => {
   });
 });
 
-router.get('/Active', (req, res) => {
+router.get('/active', (req, res) => {
   const sql = 'SELECT * FROM TrabajadoresActivos';
 
   jwt.verify(req.body.token, 'secretkey', (err, authData) => {
