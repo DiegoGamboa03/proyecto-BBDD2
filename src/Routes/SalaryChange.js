@@ -1,16 +1,19 @@
 const { Router } = require('express');
 const router = new Router();
-const conn = require('D:/Proyecto BBDD2/proyecto-BBDD2/src/Config/DatabaseConfig');
+const conn = require('../Config/DatabaseConfig');
 
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM CambiosSalarios';
 
     conn.query(sql, (error, results) => {
-    if (error) throw error;
-    if (results.length > 0) {
+    if (error){
+      res.send(error.sqlMessage);
+      return;
+    }
+    else if (results.length > 0) {
       res.json(results);
     } else {
-      res.send('Not result');
+      res.send('No hay cambios de salarios');
     }
     });
 });
@@ -20,12 +23,13 @@ router.get('/:id', (req, res) => {
   console.log(id);
   const sql = `SELECT * FROM CambiosSalarios WHERE Cedula = ${id}`;
   conn.query(sql, (error, result) => {
-    if (error) throw error;
-
-    if (result.length > 0) {
+    if (error){
+      res.send(error.sqlMessage);
+      return;
+    }else if (result.length > 0) {
       res.json(result);
     } else {
-      res.send('Not result');
+      res.send('No hay cambios de salarios relacionados con esta cedula');
     }
   });
 });
@@ -42,23 +46,29 @@ router.post('/add', (req, res) => {
     
     //Validaciones
 
-    if(salaryChangeObj.Cedula.matched()){ //Que cedula no contenga letras
-      res.send('La cedula no puede contener letras');
-    }else if(salaryChangeObj.motivo.toLowerCase() == 'm' || salaryChangeObj.motivo.toLowerCase() == 'o'){ //Motivo solo puede ser M (Medico) o O (Otros)
-      res.send('Motivo solo puede ser: medico (M) o otro (O)');
-    }else if(typeof salaryChangeObj.cedula != 'string'){
-      res.send('cedula debe ser un string');
-    }else if(typeof salaryChangeObj.fechaCambio != 'string'){
-      res.send('fechaCambio debe ser un string');
-    }else if(typeof salaryChangeObj.motivo != 'string'){
-      res.send('Motivo debe ser un string');
-    }else if(typeof salaryChangeObj.salarioSemanalNuevo != 'float' || typeof salaryChangeObj.salarioSemanalNuevo != 'number'){
-      res.send('Salario semanal nuevo debe ser un float');
+    let regexpID = new RegExp(/^\d{1,3}\.\d{3,3}\.\d{3,3}$/,"gm");
+    let regexpReason = RegExp(/^[A-Za-z.\s]*$/,"gm");    
+    
+    if(!(regexpID.test(String(salaryChangeObj.cedula)))){
+      res.send('La cedula tiene que seguir el formato xx.xxx.xxx, no puede contener simbolos');
+      return;
+    }else if(Date(salaryChangeObj.fechaCambio) > Date.now()){
+      res.send('La fecha de cambio de salario no puede ser mayor a la fecha de hoy');
+      return;
+    }else if(!(regexpReason.test(String(salaryChangeObj.Motivo)))){
+      res.send('El motivo solo puede incluir letras, puntos y espacios');
+      return;
+    }else if(Number(salaryChangeObj.salarioSemanalNuevo) <= 0){
+      res.send('El nuevo salario debe ser mayor a cero');
+      return;
     }
     
     conn.query(sql, salaryChangeObj, error => {
-      if (error) throw error;
-      res.send('Salary Change created!');
+      if (error){
+        res.send(error.sqlMessage);
+        return;
+      }
+      res.send(`El salario actual de '${salaryChangeObj.cedula}'`);
     });
 });
 
@@ -67,8 +77,11 @@ router.delete('/delete/:id/:date', (req, res) => {
     const sql = `DELETE FROM CambiosSalarios WHERE Cedula = '${id}' AND FechaCambio = '${date}'`;
   
     conn.query(sql, error => {
-      if (error) throw error;
-      res.send('Worker deleted');
+      if (error){
+        res.send(error.sqlMessage);
+        return;
+      }
+      res.send('El salario ha sido eliminado');
     });
   });
   

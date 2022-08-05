@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = new Router();
-const conn = require('D:/Proyecto BBDD2/proyecto-BBDD2/src/Config/DatabaseConfig');
+const conn = require('../Config/DatabaseConfig');
 
 router.get('/AnualSalaryChanges', (req, res) => {
     const sql = 'CALL totalCambiosSalariosAnual();';
@@ -10,7 +10,7 @@ router.get('/AnualSalaryChanges', (req, res) => {
     if (results.length > 0) {
       res.json(results);
     } else {
-      res.send('Not result');
+      res.send('No hay resultados');
     }
     });
 });
@@ -23,7 +23,7 @@ router.get('/AnualRetiredWorkers', (req, res) => {
   if (results.length > 0) {
     res.json(results);
   } else {
-    res.send('Not result');
+    res.send('No hay resultados');
   }
   });
 });
@@ -36,7 +36,7 @@ router.get('/AnualRetiredWorkersByGender', (req, res) => {
   if (results.length > 0) {
     res.json(results);
   } else {
-    res.send('Not result');
+    res.send('No hay resultados');
   }
   });
 });
@@ -49,7 +49,7 @@ router.get('/AnualNewWorkers', (req, res) => {
   if (results.length > 0) {
     res.json(results);
   } else {
-    res.send('Not result');
+    res.send('No hay resultados');
   }
   });
 });
@@ -63,7 +63,7 @@ router.get('/AnualNewWorkersByGender', (req, res) => {
   if (results.length > 0) {
     res.json(results);
   } else {
-    res.send('Not result');
+    res.send('No hay resultados');
   }
   });
 });

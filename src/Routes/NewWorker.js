@@ -1,16 +1,19 @@
 const { Router } = require('express');
 const router = new Router();
-const conn = require('D:/Proyecto BBDD2/proyecto-BBDD2/src/Config/DatabaseConfig');
+const conn = require('../Config/DatabaseConfig');
 
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM NuevosIngresos';
 
     conn.query(sql, (error, results) => {
-    if (error) throw error;
+      if (error){
+        res.send(error.sqlMessage);
+        return;
+      }
     if (results.length > 0) {
       res.json(results);
     } else {
-      res.send('Not result');
+      res.send('No se ha encontrado resultado');
     }
     });
 });
@@ -20,12 +23,14 @@ router.get('/:id', (req, res) => {
   console.log(id);
   const sql = `SELECT * FROM NuevosIngresos WHERE Cedula = ${id}`;
   conn.query(sql, (error, result) => {
-    if (error) throw error;
-
+    if (error){
+      res.send(error.sqlMessage);
+      return;
+    }
     if (result.length > 0) {
       res.json(result);
     } else {
-      res.send('Not result');
+      res.send('No se ha encontrado trabajador nuevo con esa cedula');
     }
   });
 });

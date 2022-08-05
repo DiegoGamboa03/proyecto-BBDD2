@@ -2,7 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
 const { GoogleAuth } = require('google-auth-library');
-const conn = require('D:/Proyecto BBDD2/proyecto-BBDD2/src/Config/DatabaseConfig');
+const conn = require('../Config/DatabaseConfig');
 
 /**
  * Esta funcion insertara en la base de datos toda la informacion que se encuentre en los googlesheets dentro del drive
