@@ -11,7 +11,10 @@ router.get('/', (req, res) => {
         res.sendStatus(403);
       } else {
         conn.query(sql, (error, results) => {
-          if (error) throw error;
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
           if (results.length > 0) {
             res.json(results);
           } else {

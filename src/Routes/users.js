@@ -8,9 +8,12 @@ router.get('/login/:id/:password', (req, res) => {
     const { id } = req.params;
     const { password } = req.params;
    
-    const sql = `SELECT * FROM Usuarios WHERE id_user = ${id} AND password_user = ${password}`;
+    const sql = `SELECT * FROM Usuarios WHERE id_user = '${id}' AND password_user = '${password}'`;
     conn.query(sql, (error, result) => {
-      if (error) throw error;
+      if (error){
+        res.send(error.sqlMessage);
+        return;
+      }
   
       if (result.length > 0) {
         jwt.sign({result}, 'secretkey', (err, token) => {
@@ -38,7 +41,10 @@ router.post('/signin', (req, res) => {
     // Aqui poner las verificaciones
     
     conn.query(sql, userObj, error => {
-      if (error) throw error;
+      if (error){
+        res.send(error.sqlMessage);
+        return;
+      }
       res.send('Usuario creado!');
     });
 });
@@ -52,7 +58,10 @@ router.delete('/delete/:id/:password',(req, res) => {
         res.sendStatus(403);
       } else {
         conn.query(sql, error => {
-          if (error) throw error;
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
           
           res.send('Usuario Eliminado');
         });
@@ -73,7 +82,10 @@ router.put('/update/:id/:password', (req, res) => {
         res.sendStatus(403);
       } else {
         conn.query(sql, error => {
-          if (error) throw error;
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
           res.send('Worker updated!');
         });
       }

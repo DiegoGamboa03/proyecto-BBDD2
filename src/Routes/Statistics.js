@@ -11,7 +11,10 @@ router.get('/AnualSalaryChanges', (req, res) => {
         res.sendStatus(403);
       } else {
         conn.query(sql, (error, results) => {
-          if (error) throw error;
+          if (error){
+            res.send(error.sqlMessage);
+            return;
+          }
           if (results.length > 0) {
             res.json(results);
           } else {
@@ -30,7 +33,10 @@ router.get('/AnualRetiredWorkers', (req, res) => {
       res.sendStatus(403);
     } else {
       conn.query(sql, (error, results) => {
-        if (error) throw error;
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
         if (results.length > 0) {
           res.json(results);
         } else {
@@ -49,7 +55,10 @@ router.get('/AnualRetiredWorkersByGender', (req, res) => {
       res.sendStatus(403);
     } else {
       conn.query(sql, (error, results) => {
-        if (error) throw error;
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
         if (results.length > 0) {
           res.json(results);
         } else {
@@ -68,7 +77,10 @@ router.get('/AnualNewWorkers', (req, res) => {
       res.sendStatus(403);
     } else {
       conn.query(sql, (error, results) => {
-        if (error) throw error;
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
         if (results.length > 0) {
           res.json(results);
         } else {
@@ -88,7 +100,10 @@ router.get('/AnualNewWorkersByGender', (req, res) => {
       res.sendStatus(403);
     } else {
       conn.query(sql, (error, results) => {
-        if (error) throw error;
+        if (error){
+          res.send(error.sqlMessage);
+          return;
+        }
         if (results.length > 0) {
           res.json(results);
         } else {

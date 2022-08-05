@@ -28,7 +28,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   console.log(id);
-  const sql = `SELECT * FROM PermisosContinuos WHERE Cedula = ${id}`;
+  const sql = `SELECT * FROM PermisosContinuos WHERE Cedula = '${id}'`;
   
   jwt.verify(req.body.token, 'secretkey', (err, authData) => {
     if(err) {
